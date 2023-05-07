@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: karataydevrootuser
+      password: karataydevrootpassword1
+      database: jsonserver
+      port: 27017
+      host: localhost
