@@ -2,6 +2,7 @@ package dev.karatay.jsonserver.api.controller;
 
 import dev.karatay.jsonserver.api.constants.ApiEndpoints;
 import dev.karatay.jsonserver.service.apirecord.ApiRecordService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,8 @@ public class ApiRecordController {
         return apiRecordService.getRawRecordById(namespace, domain, id);
     }
     @GetMapping("/raw/{namespace}/{domain}")
-    public String getRawRecordList(@PathVariable String namespace, @PathVariable String domain) {
-        return apiRecordService.getRawRecordList(namespace, domain);
+    public String getRawRecordList(@PathVariable String namespace, @PathVariable String domain, HttpServletRequest request) {
+        return apiRecordService.getRawRecordList(namespace, domain, request);
     }
     @GetMapping("/raw/{namespace}")
     public String getRawRecordList(@PathVariable String namespace) {

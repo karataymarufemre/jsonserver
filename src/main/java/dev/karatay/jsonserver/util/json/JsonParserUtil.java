@@ -14,8 +14,24 @@ public class JsonParserUtil {
     public static List<JSONObject> findByKeyEquals(JSONArray jsonArray, String key, String value) {
         return IntStream.range(0, jsonArray.length())
                 .mapToObj(index -> ((JSONObject)jsonArray.get(index)))
-                .filter(i->i.get(key).toString().equals(value))
+                .filter(i->{
+                    try {
+                        return i.get(key).toString().equals(value);
+                    } catch (Exception ex) {
+                        return false;
+                    }
+                })
                 .toList();
+    }
+
+    public static JSONArray findByKeyEqualsArray(JSONArray jsonArray, String key, String value) {
+        var jsonObjectList = findByKeyEquals(jsonArray, key, value);
+        if(jsonObjectList.isEmpty()) {
+            return new JSONArray("[]");
+        }
+
+        return new JSONArray(jsonObjectList);
+
     }
 
     public static JSONObject findByIdInJsonArray(JSONArray jsonArray, String id) {
