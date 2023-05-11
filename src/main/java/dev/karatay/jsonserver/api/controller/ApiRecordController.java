@@ -19,7 +19,7 @@ public class ApiRecordController {
     }
     @GetMapping("/raw/{namespace}/{domain}")
     public String getRawRecordList(@PathVariable String namespace, @PathVariable String domain, HttpServletRequest request) {
-        return apiRecordService.getRawRecordList(namespace, domain, request);
+        return apiRecordService.getRawRecordList(namespace, domain, request.getParameterMap());
     }
     @GetMapping("/raw/{namespace}")
     public String getRawRecordList(@PathVariable String namespace) {

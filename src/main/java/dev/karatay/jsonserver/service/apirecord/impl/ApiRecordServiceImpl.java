@@ -4,7 +4,6 @@ import dev.karatay.jsonserver.domain.document.ApiRecord;
 import dev.karatay.jsonserver.repository.ApiRecordRepository;
 import dev.karatay.jsonserver.service.apirecord.ApiRecordService;
 import dev.karatay.jsonserver.util.json.JsonParserUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,15 +26,11 @@ public class ApiRecordServiceImpl implements ApiRecordService {
     }
 
     @Override
-    public String getRawRecordList(String namespace, String domain, HttpServletRequest request) {
+    public String getRawRecordList(String namespace, String domain, Map<String, String[]> parameterMap) {
         var jsonData = apiRecordRepository.findByNamespaceAndDomain(namespace, domain).map(ApiRecord::getJsonData).orElseThrow(()-> new RuntimeException("record not found"));
-
         JSONArray jsonArray = new JSONArray(jsonData);
-        var a = request.getParameterMap();
-        for(Map.Entry<String, String[]> entry: a.entrySet()) {
+        for(Map.Entry<String, String[]> entry: parameterMap.entrySet())
             jsonArray = JsonParserUtil.findByKeyEqualsArray(jsonArray, entry.getKey(), entry.getValue()[0]);
-        }
-
         return jsonArray.toString();
     }
 
