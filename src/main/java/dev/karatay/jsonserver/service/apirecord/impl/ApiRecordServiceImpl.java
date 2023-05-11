@@ -3,7 +3,7 @@ package dev.karatay.jsonserver.service.apirecord.impl;
 import dev.karatay.jsonserver.domain.document.ApiRecord;
 import dev.karatay.jsonserver.repository.ApiRecordRepository;
 import dev.karatay.jsonserver.service.apirecord.ApiRecordService;
-import dev.karatay.jsonserver.util.json.JsonParserUtil;
+import dev.karatay.jsonserver.service.jsonparser.JsonParserService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,12 +17,13 @@ import java.util.Map;
 public class ApiRecordServiceImpl implements ApiRecordService {
 
     private final ApiRecordRepository apiRecordRepository;
+    private final JsonParserService jsonParserService;
 
     @Override
     public String getRawRecordById(String namespace, String domain, String id) {
         String jsonListString = getRecordRaw(namespace + "/" + domain);
         JSONArray jsonArray = new JSONArray(jsonListString);
-        return JsonParserUtil.findByIdInJsonArray(jsonArray, id).toString();
+        return jsonParserService.findByIdInJsonArray(jsonArray, id).toString();
     }
 
     @Override
@@ -30,7 +31,7 @@ public class ApiRecordServiceImpl implements ApiRecordService {
         var jsonData = apiRecordRepository.findByNamespaceAndDomain(namespace, domain).map(ApiRecord::getJsonData).orElseThrow(()-> new RuntimeException("record not found"));
         JSONArray jsonArray = new JSONArray(jsonData);
         for(Map.Entry<String, String[]> entry: parameterMap.entrySet())
-            jsonArray = JsonParserUtil.findByKeyEqualsArray(jsonArray, entry.getKey(), entry.getValue()[0]);
+            jsonArray = jsonParserService.findByKeyEqualsArray(jsonArray, entry.getKey(), entry.getValue()[0]);
         return jsonArray.toString();
     }
 
@@ -62,7 +63,7 @@ public class ApiRecordServiceImpl implements ApiRecordService {
     public String updateRecordById(String namespace, String domain, String id, String jsonData) {
         var record = apiRecordRepository.findById(namespace + "/" + domain).orElseThrow(()-> new RuntimeException("record not found!"));
         JSONArray jsonArray = new JSONArray(record.getJsonData());
-        var index = JsonParserUtil.findIndexByIdInJsonArray(jsonArray, id).orElseThrow(()-> new RuntimeException("record not found!"));
+        var index = jsonParserService.findIndexByIdInJsonArray(jsonArray, id).orElseThrow(()-> new RuntimeException("record not found!"));
         jsonArray.put(index, new JSONObject(jsonData));
         record.setJsonData(jsonArray.toString());
         return apiRecordRepository.save(record).getJsonData();
@@ -72,7 +73,7 @@ public class ApiRecordServiceImpl implements ApiRecordService {
     public String deleteRecordById(String namespace, String domain, String id) {
         var record = apiRecordRepository.findById(namespace + "/" + domain).orElseThrow(()-> new RuntimeException("record not found!"));
         JSONArray jsonArray = new JSONArray(record.getJsonData());
-        var index = JsonParserUtil.findIndexByIdInJsonArray(jsonArray, id).orElseThrow(()-> new RuntimeException("record not found!"));
+        var index = jsonParserService.findIndexByIdInJsonArray(jsonArray, id).orElseThrow(()-> new RuntimeException("record not found!"));
         jsonArray.remove(index);
         record.setJsonData(jsonArray.toString());
         return apiRecordRepository.save(record).getJsonData();
